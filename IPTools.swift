@@ -15,7 +15,7 @@ struct IPAddress: CustomStringConvertible {
     /// Initializes IPAddress with a string
     /// - parameters:
     ///     - string: Example: "112.99.210.4"
-    init?(_ string: String) {
+    public init?(_ string: String) {
         let parts = string
             .split(separator: Character("."))
             .map({String($0)})
@@ -29,7 +29,7 @@ struct IPAddress: CustomStringConvertible {
     /// Initializes IPAddress with a UInt32 value
     /// - parameters:
     ///     - decimal: Example: 12345678 or 0hF1AC0015 or 0b01100101_11111111_00000000_11010111
-    init(decimal dec: UInt32) {
+    public init(decimal dec: UInt32) {
         var bigEndian = dec.bigEndian
         let count = MemoryLayout<UInt32>.size
         let bytePtr = withUnsafePointer(to: &bigEndian) {
@@ -44,7 +44,7 @@ struct IPAddress: CustomStringConvertible {
     /// Initializes IPAddress with a UInt8 decimal values
     /// - parameters:
     ///     - ipDecimals: Example: [127, 0, 0, 1]
-    init?(ipDecimals dec: [UInt8]) {
+    public init?(ipDecimals dec: [UInt8]) {
         guard dec.count == 4 else { return nil }
         ipAddr = dec
         let ipo = dec.map({ UInt32($0) })
@@ -53,7 +53,7 @@ struct IPAddress: CustomStringConvertible {
     
     // MARK: - CustomStringConvertible
     
-    var description: String {
+    public var description: String {
         return "\(ipAddr[0]).\(ipAddr[1]).\(ipAddr[2]).\(ipAddr[3])"
     }
     
@@ -65,7 +65,7 @@ struct IPAddress: CustomStringConvertible {
     
     /// Indicates wheter the IP address lies within bounds of private-use range.
     /// See RFC1918 for details (http://www.iana.org/go/rfc1918)
-    var isPrivate: Bool {
+    public var isPrivate: Bool {
         return isInRange(167772160, to: 184549375) || // 10.0.0.0/8
             isInRange(2886729728, to: 2887778303) || // 172.16.0.0/12
             isInRange(3232235520, to: 3232301055) // 192.168.0.0/16
@@ -73,66 +73,66 @@ struct IPAddress: CustomStringConvertible {
     
     /// Indicates wheter the IP address lies within bounds of "This host on this network" range.
     /// See RFC1122, Section 3.2.1.3 for details (http://www.iana.org/go/rfc1122)
-    var isThisNetworkReserved: Bool {
+    public var isThisNetworkReserved: Bool {
         return isInRange(0, to: 16777215) // 0.0.0.0/8
     }
     
     /// Indicates wheter the IP address lies within bounds of loopback range.
     /// See RFC1122, Section 3.2.1.3 for details (http://www.iana.org/go/rfc1122)
-    var isLoopback: Bool {
+    public var isLoopback: Bool {
         return isInRange(2130706432, to: 2147483647) // 127.0.0.0/8
     }
     
     /// Indicates wheter the IP address lies within bounds of link local range.
     /// See RFC3927 for details (http://www.iana.org/go/rfc3927)
-    var isLinkLocal: Bool {
+    public var isLinkLocal: Bool {
         return isInRange(2851995648, to: 2852061183) //169.254.0.0/16
     }
     
     /// Indicates wheter the IP address lies within bounds of shared address space.
     /// See RFC6598 for details (http://www.iana.org/go/rfc6598)
-    var isSharedAddressSpace: Bool {
+    public var isSharedAddressSpace: Bool {
         return isInRange(1681915904, to: 1686110207) // 100.64.0.0/10
     }
     
     /// Indicates wheter the IP address lies within bounds of reserved address space.
     /// See RFC1112, Section 4 for details (http://www.iana.org/go/rfc1112)
-    var isReserved: Bool {
+    public var isReserved: Bool {
         return isInRange(4026531840, to: 4294967295) // 240.0.0.0/4
     }
     
     /// Indicates wheter the IP address lies within bounds of IETF assigned address space.
     /// See RFC6890, Section 2.1 for details (http://www.iana.org/go/rfc6890)
-    var isIETFAssigned: Bool {
+    public var isIETFAssigned: Bool {
         return isInRange(3221225472, to: 3221225727) // 192.0.0.0/24
     }
     
     /// Indicates wheter the IP address lies within bounds of TEST-NET-1 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
-    var isTestNet1: Bool {
+    public var isTestNet1: Bool {
         return isInRange(3221225984, to: 3221226239) // 192.0.2.0/24
     }
     
     /// Indicates wheter the IP address lies within bounds of TEST-NET-2 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
-    var isTestNet2: Bool {
+    public var isTestNet2: Bool {
         return isInRange(3325256704, to: 3325256959) // 198.51.100.0/24
     }
     
     /// Indicates wheter the IP address lies within bounds of TEST-NET-2 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
-    var isTestNet3: Bool {
+    public var isTestNet3: Bool {
         return isInRange(3405803776, to: 3405804031) // 203.0.113.0/24
     }
     
     /// Indicates wheter the IP address lies within bounds of benchmarking address space.
     /// See RFC2544 for details (http://www.iana.org/go/rfc2544)
-    var isBenchmarking: Bool {
+    public var isBenchmarking: Bool {
         return isInRange(3323068416, to: 3323199487) // 198.18.0.0/15
     }
     
     /// Indicates wheter the IP address can be globally reachable
-    var isSpecialNonGlobal: Bool {
+    public var isSpecialNonGlobal: Bool {
         return isPrivate || isLoopback || isReserved || isTestNet1 || isTestNet2 || isTestNet3 || isLinkLocal || isIETFAssigned || isBenchmarking || isThisNetworkReserved ||
         isSharedAddressSpace
     }
@@ -141,21 +141,17 @@ struct IPAddress: CustomStringConvertible {
 // MARK: - Equatable
 
 extension IPAddress: Equatable {
-    
     static func == (lhs: IPAddress, rhs: IPAddress) -> Bool {
         return lhs.ipDecimal == rhs.ipDecimal
     }
-    
 }
 
 // MARK: - Comparable
 
 extension IPAddress: Comparable {
-    
     static func < (lhs: IPAddress, rhs: IPAddress) -> Bool {
         return lhs.ipDecimal < rhs.ipDecimal
     }
-    
 }
 
 
@@ -187,7 +183,7 @@ struct IPRoute {
     /// Initializes IPRoute (IP address and network prefix) with a string
     /// - parameters:
     ///     - string: Example: "112.99.210.4/24"
-    init?(_ str: String) {
+    public init?(_ str: String) {
         let parts = str.split(separator: "/").map{String($0)}
         guard parts.count == 1 || parts.count == 2 else { return nil }
         guard let iptmp = IPAddress(parts[0]) else { return nil }
@@ -206,7 +202,7 @@ struct IPRoute {
     /// - parameters:
     ///     - withIPAddr: IPAddress instance
     ///     - prefix: network prefix as an unsigned integer. should be less or equal 32.
-    init?<T: UnsignedInteger>(withIPAddr: IPAddress, prefix: T) {
+    public init?<T: UnsignedInteger>(withIPAddr: IPAddress, prefix: T) {
         guard prefix <= 32 else { return nil }
         self.prefix = UInt8(prefix)
         ip = IPAddress(decimal: withIPAddr.ipDecimal)
@@ -217,7 +213,7 @@ struct IPRoute {
     /// - parameters:
     ///     - withIpDecimals: array of four unsigned integers of any type
     ///     - prefix: network prefix as an unsigned integer. Should be less or equal 32.
-    init?<T: UnsignedInteger>(withIpDeciamals dec: [UInt8], prefix: T) {
+    public init?<T: UnsignedInteger>(withIpDeciamals dec: [UInt8], prefix: T) {
         guard dec.count == 4, prefix <= 32 else { return nil }
         self.prefix = UInt8(prefix)
         guard let iptmp = IPAddress(ipDecimals: dec) else { return nil }
@@ -317,7 +313,7 @@ struct IPRoute {
     /// Indicates wheter the whole subnet lies within bounds of private-use range.
     /// See RFC1918 for details (http://www.iana.org/go/rfc1918)
     /// To check single IP address only, please use self.ip.isPrivate
-    var isPrivate: Bool {
+    public var isPrivate: Bool {
         return overlapsDecimalRange(167772160, to: 184549375) || // 10.0.0.0/8
             overlapsDecimalRange(2886729728, to: 2887778303) || // 172.16.0.0/12
             overlapsDecimalRange(3232235520, to: 3232301055) // 192.168.0.0/16
@@ -326,76 +322,76 @@ struct IPRoute {
     /// Indicates wheter the whole subnet lies within bounds of "This host on this network" range.
     /// See RFC1122, Section 3.2.1.3 for details (http://www.iana.org/go/rfc1122)
     /// To check single IP address only, please use self.ip.isThisNetworkReserved
-    var isThisNetworkReserved: Bool {
+    public var isThisNetworkReserved: Bool {
         return overlapsDecimalRange(0, to: 16777215) // 0.0.0.0/8
     }
     
     /// Indicates wheter the whole subnet lies within bounds of loopback range.
     /// See RFC1122, Section 3.2.1.3 for details (http://www.iana.org/go/rfc1122)
     /// To check single IP address only, please use self.ip.isLoopback
-    var isLoopback: Bool {
+    public var isLoopback: Bool {
         return overlapsDecimalRange(2130706432, to: 2147483647) // 127.0.0.0/8
     }
     
     /// Indicates wheter the whole subnet lies within bounds of link local range.
     /// See RFC3927 for details (http://www.iana.org/go/rfc3927)
     /// To check single IP address only, please use self.ip.isLinkLocal
-    var isLinkLocal: Bool {
+    public var isLinkLocal: Bool {
         return overlapsDecimalRange(2851995648, to: 2852061183) //169.254.0.0/16
     }
     
     /// Indicates wheter the whole subnet lies within bounds of shared address space.
     /// See RFC6598 for details (http://www.iana.org/go/rfc6598)
     /// To check single IP address only, please use self.ip.isSharedAddressSpace
-    var isSharedAddressSpace: Bool {
+    public var isSharedAddressSpace: Bool {
         return overlapsDecimalRange(1681915904, to: 1686110207) // 100.64.0.0/10
     }
     
     /// Indicates wheter the whole subnet lies within bounds of reserved address space.
     /// See RFC1112, Section 4 for details (http://www.iana.org/go/rfc1112)
     /// To check single IP address only, please use self.ip.isReserved
-    var isReserved: Bool {
+    public var isReserved: Bool {
         return overlapsDecimalRange(4026531840, to: 4294967295) // 240.0.0.0/4
     }
     
     /// Indicates wheter the whole subnet lies within bounds of IETF assigned address space.
     /// See RFC6890, Section 2.1 for details (http://www.iana.org/go/rfc6890)
     /// To check single IP address only, please use self.ip.isIETFAssigned
-    var isIETFAssigned: Bool {
+    public var isIETFAssigned: Bool {
         return overlapsDecimalRange(3221225472, to: 3221225727) // 192.0.0.0/24
     }
     
     /// Indicates wheter the whole subnet lies within bounds of TEST-NET-1 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
     /// To check single IP address only, please use self.ip.isTestNet1
-    var isTestNet1: Bool {
+    public var isTestNet1: Bool {
         return overlapsDecimalRange(3221225984, to: 3221226239) // 192.0.2.0/24
     }
     
     /// Indicates wheter the whole subnet lies within bounds of TEST-NET-2 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
     /// To check single IP address only, please use self.ip.isTestNet2
-    var isTestNet2: Bool {
+    public var isTestNet2: Bool {
         return overlapsDecimalRange(3325256704, to: 3325256959) // 198.51.100.0/24
     }
     
     /// Indicates wheter the whole subnet lies within bounds of TEST-NET-2 address space.
     /// See RFC5737 for details (http://www.iana.org/go/rfc5737)
     /// To check single IP address only, please use self.ip.isTestNet3
-    var isTestNet3: Bool {
+    public var isTestNet3: Bool {
         return overlapsDecimalRange(3405803776, to: 3405804031) // 203.0.113.0/24
     }
     
     /// Indicates wheter the whole subnet lies within bounds of benchmarking address space.
     /// See RFC2544 for details (http://www.iana.org/go/rfc2544)
     /// To check single IP address only, please use self.ip.isBenchmarking
-    var isBenchmarking: Bool {
+    public var isBenchmarking: Bool {
         return overlapsDecimalRange(3323068416, to: 3323199487) // 198.18.0.0/15
     }
     
     /// Indicates wheter the whole subnet can be globally reachable
     /// To check single IP address only, please use self.ip.isGloballyReachable
-    var isGloballyReachable: Bool {
+    public var isGloballyReachable: Bool {
         return isPrivate || isLoopback || isReserved || isTestNet1 || isTestNet2 || isTestNet3 || isLinkLocal || isIETFAssigned || isBenchmarking || isThisNetworkReserved ||
         isSharedAddressSpace
     }
@@ -407,7 +403,7 @@ struct IPRoute {
 extension IPRoute: CustomStringConvertible {
     /// String representation of the IP address of the /32 subnet (i.e. "192.168.0.10") or
     /// complete CIDR notation otherwise (i.e. "192.168.0.10/24")
-    var description: String {
+    public var description: String {
         return ip.ipAddr.map({String($0)}).joined(separator: ".")
             .appending(prefix < 32 ? "/\(prefix)" : "")
     }
@@ -416,20 +412,17 @@ extension IPRoute: CustomStringConvertible {
 // MARK: - Equatable
 
 extension IPRoute: Equatable {
-    
     static func == (lhs: IPRoute, rhs: IPRoute) -> Bool {
         return (lhs.ip.ipDecimal == rhs.ip.ipDecimal) && (lhs.prefix == rhs.prefix)
     }
-    
 }
 
 // MARK: - Comparable
 
 extension IPRoute: Comparable {
-    
     /// This comparision is used to sort nonoverlapping routes for summarization
     /// - Returns: routes compared by address first, network prefix next, both in ascending order
-    static func < (lhs: IPRoute, rhs: IPRoute) -> Bool {
+    public static func < (lhs: IPRoute, rhs: IPRoute) -> Bool {
         if lhs.ip.ipDecimal != rhs.ip.ipDecimal {
             return lhs.ip.ipDecimal < rhs.ip.ipDecimal
         } else {
@@ -441,39 +434,41 @@ extension IPRoute: Comparable {
 // MARK: - Hashable
 
 extension IPRoute: Hashable {
-    var hashValue: Int {
+    public var hashValue: Int {
         return ip.ipDecimal.hashValue ^ prefixDecimal.hashValue
     }
 }
 
 // MARK: - IPRangeProtocol
 extension IPRoute: IPRangeProtocol {
-    
-    var rngLow: IPAddress {
+    public var rngLow: IPAddress {
         return IPAddress(decimal: networkDecimal)
     }
     
-    var rngHigh: IPAddress {
+    public var rngHigh: IPAddress {
         return IPAddress(decimal: broadcastDecimal)
     }
 }
 
 //==================================================================================================
 
+/// Represents an address range from x.x.x.x to y.y.y.y
 struct IPRange: IPRangeProtocol {
+    /// First IP address
+    public let low: IPAddress
+    /// Last IP address
+    public let high: IPAddress
     
-    let low: IPAddress
-    let high: IPAddress
-    
-    var rngLow: IPAddress {
+    public var rngLow: IPAddress {
         return low
     }
     
-    var rngHigh: IPAddress {
+    public var rngHigh: IPAddress {
         return high
     }
     
-    init?(_ lo: IPAddress, to: IPAddress) {
+    /// Creates an IPRange using two IPAdress instances
+    public init?(_ lo: IPAddress, to: IPAddress) {
         guard lo < to else {
             return nil
         }
@@ -481,12 +476,17 @@ struct IPRange: IPRangeProtocol {
         high = to
     }
     
-    init(_ rt: IPRoute) {
+    /// Creates an IPRange based on the first (network) and
+    /// the last (broadcast) addresses of a subnet, which
+    /// encloses or represents the presented IPRoute
+    public init(_ rt: IPRoute) {
         low = IPAddress(decimal: rt.networkDecimal)
         high = IPAddress(decimal: rt.broadcastDecimal)
     }
     
-    init?(_ lo: IPRoute, to: IPAddress) {
+    /// Creates an IPRange merging a subnet which encloses or represents
+    /// the presented IPRoute with an neighboor IPAddress
+    public init?(_ lo: IPRoute, to: IPAddress) {
         // Check if IPRoute represents the whole subnet, not just an address within
         guard lo.prefix == 32 || lo.ip.ipDecimal == lo.networkDecimal else {
             return nil
@@ -499,7 +499,9 @@ struct IPRange: IPRangeProtocol {
         }
     }
     
-    init?(_ lo: IPAddress, to: IPRoute) {
+    /// Creates an IPRange merging an IPAddress with a neighboor subnet
+    /// which encloses or represents the presented IPRoute
+    public init?(_ lo: IPAddress, to: IPRoute) {
         // Check if IPRoute represents the whole subnet, not just an address within
         guard to.prefix == 32 || to.ip.ipDecimal == to.networkDecimal else {
             return nil
@@ -512,7 +514,9 @@ struct IPRange: IPRangeProtocol {
         }
     }
     
-    init?(_ lo: IPRoute, to: IPRoute) {
+    /// Creates an IPRange merging two neighboor subnets, represemted by IPRoute
+    /// instances. Each IPRoute's ipaddress must be a network address to proceed
+    public init?(_ lo: IPRoute, to: IPRoute) {
         // Check if IPRoutes represent whole subnets, not just addresses within
         guard (to.prefix == 32 || to.ip.ipDecimal == to.networkDecimal) &&
             (lo.prefix == 32 || lo.ip.ipDecimal == lo.networkDecimal) else {
@@ -526,7 +530,8 @@ struct IPRange: IPRangeProtocol {
         }
     }
     
-    init?(_ s: String) {
+    /// Creates an IPRange from string, i.e. "220.30.20.10-222.22.2.7"
+    public init?(_ s: String) {
         let parts = s.components(separatedBy: "-")
         if parts.count == 2,
             let l = IPAddress(parts[0]),
@@ -541,7 +546,7 @@ struct IPRange: IPRangeProtocol {
         }
     }
     
-    static func + (lhs: IPRange, rhs: IPRange)->IPRange? {
+    public static func + (lhs: IPRange, rhs: IPRange)->IPRange? {
         guard lhs.high.ipDecimal + 1 == rhs.low.ipDecimal else { return nil }
         return IPRange(lhs.low, to: rhs.high)
     }
@@ -551,7 +556,9 @@ struct IPRange: IPRangeProtocol {
         return low.ipDecimal ^ high.ipDecimal
     }
     
-    var subnetConvertable: Bool {
+    /// Indicates wheter range could be transformed into a subnet
+    /// i.e. IPRange("192.168.10.0-192.168.10.127").subnetConvertable is true
+    public var subnetConvertable: Bool {
         // test wildcard first:
         var wc = mayBeWildcard
         while (wc > 0) {
@@ -565,13 +572,15 @@ struct IPRange: IPRangeProtocol {
         return high.ipDecimal == (low.ipDecimal | mayBeWildcard)
     }
     
-    var ipAddressCount: Int {
+    /// Returns count of IP addresses in range
+    public var ipAddressCount: Int {
         return Int(high.ipDecimal - low.ipDecimal) + 1
     }
     
     // Subnetting and supernetting
     
-    static func overlaps(lhs: IPRange, rhs: IPRange)->Bool {
+    /// Indicates whether the given range overlaps other range's bounds
+    public static func overlaps(lhs: IPRange, rhs: IPRange)->Bool {
         return (lhs.low <= rhs.low && lhs.high >= rhs.low) ||
             (rhs.low <= lhs.low && rhs.high >= lhs.low)
     }
@@ -580,11 +589,11 @@ struct IPRange: IPRangeProtocol {
 // MARK: - Custom string convertable and other descriptors
 extension IPRange: CustomStringConvertible {
     
-    var description: String {
+    public var description: String {
         return "\(low)-\(high)"
     }
     
-    var subnetDescription: String? {
+    public var subnetDescription: String? {
         guard subnetConvertable else { return nil }
         var wc = mayBeWildcard
         var prefix = 32
@@ -603,7 +612,7 @@ extension IPRange: CustomStringConvertible {
         return Array(bytePtr).map({String($0)}).joined(separator: ".").appending("\(prefix < 32 ? "/\(prefix)" : "")")
     }
     
-    var subnetOrRangeDescription: String {
+   public  var subnetOrRangeDescription: String {
         return subnetDescription ?? description
     }
     
@@ -612,7 +621,7 @@ extension IPRange: CustomStringConvertible {
 // MARK: - Equatable
 
 extension IPRange: Equatable {
-    static func == (lhs: IPRange, rhs: IPRange) -> Bool {
+    public static func == (lhs: IPRange, rhs: IPRange) -> Bool {
         return lhs.low == rhs.low && lhs.high == rhs.high
     }
 }
@@ -621,11 +630,11 @@ extension IPRange: Equatable {
 extension IPRange: Comparable {
     
     // Sort by low ip by default
-    static func < (lhs: IPRange, rhs: IPRange) -> Bool {
+    public static func < (lhs: IPRange, rhs: IPRange) -> Bool {
         return lhs.low < rhs.low
     }
     
-    static func highIpLessThanOther(lhs: IPRange, rhs: IPRange) -> Bool {
+    public static func highIpLessThanOther(lhs: IPRange, rhs: IPRange) -> Bool {
         return lhs.low < rhs.low
     }
 }
@@ -641,7 +650,7 @@ protocol IPRangeProtocol: Equatable {
 
 struct IPCleanup {
     
-    static func removeDuplicateSubnets(ips: [IPRoute])->[IPRoute] {
+    public static func removeDuplicateSubnets(ips: [IPRoute])->[IPRoute] {
         var output: [IPRoute] = ips.sorted()
         var removed = 0
         var i = 1
@@ -660,13 +669,13 @@ struct IPCleanup {
         return output
     }
     
-    static func removeNonGlobalSubnets(ips: [IPRoute])->[IPRoute] {
+    public static func removeNonGlobalSubnets(ips: [IPRoute])->[IPRoute] {
         let output = ips.filter({!$0.isGloballyReachable})
         print("\(Date()) | \(ips.count - output.count) records removed beacause of the non-global status")
         return output
     }
     
-    static func collapseToSubnets(ips: [IPRoute], verbose: Bool = false)->[IPRoute] {
+    public static func collapseToSubnets(ips: [IPRoute], verbose: Bool = false)->[IPRoute] {
         guard ips.count > 0 else { return [] }
         var output = ips.sorted()
         var i = 1
@@ -690,7 +699,7 @@ struct IPCleanup {
         return output
     }
     
-    static func collapseToRanges(routes: [IPRoute])->[IPRange] {
+    public static func collapseToRanges(routes: [IPRoute])->[IPRange] {
         guard routes.count > 0 else { return [] }
         var ranges = routes.sorted().map({IPRange($0)})
         var i = 1
@@ -713,6 +722,4 @@ struct IPCleanup {
         print("\(Date()) | \(removed) records removed due to summarization")
         return ranges
     }
-    
 }
-
